@@ -1,0 +1,90 @@
+%script{:src => "http://code.highcharts.com/highcharts.js"}
+%script{:src => "http://code.highcharts.com/highcharts-more.js"}
+%script{:src => "http://code.highcharts.com/modules/exporting.js"}
+:css
+  .position-chart {
+    width: 550px;
+    height: 400px;
+    margin: 0 auto
+    display: inline;
+  }
+  .position {
+    border: 1px solid #555555;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 30px;
+  }
+:javascript
+  var colorIndex = 0
+  function stringToColour(str) {
+    var colors = ['#7cb5ec', '#90ed7d',
+   '#f15c80', '#2b908f', '#f45b5b', '#91e8e1']
+    return colors[colorIndex++];
+  };
+
+  function chartIt(position) {
+    var ratings = position['ratings'];
+    $('#container-' + position['id']).highcharts({
+
+      chart: {
+        polar: true,
+        type: 'line'
+      },
+
+      title: {
+        text: position['name'],
+        x: -80
+      },
+
+      pane: {
+        size: '80%'
+      },
+
+      xAxis: {
+        categories: Object.keys(ratings),
+        tickmarkPlacement: 'on',
+        lineWidth: 0
+      },
+
+      yAxis: {
+        gridLineInterpolation: 'polygon',
+        lineWidth: 0,
+        min: 0,
+        max: 4
+      },
+
+      tooltip: {
+        shared: true,
+        pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+      },
+
+      legend: {
+        align: 'right',
+        verticalAlign: 'top',
+        y: 70,
+        layout: 'vertical'
+      },
+
+      series: [{
+        name: 'Will Read',
+        type: 'area',
+        color: stringToColour(position['name']),
+        data: Object.keys(ratings).map(function(key){return ratings[key]}),
+        pointPlacement: 'on'
+      }]
+
+    });
+  };
+
+
+= link_to("New Position", new_position_path)
+
+- @positions.each do |position|
+  .position
+    %h1
+      = position[:name]
+    = link_to("Edit Characteristics", edit_position_path(position[:id]))
+    = link_to("Edit Ratings", edit_position_ratings_path(position[:id]))
+    .position-chart{id: "container-#{position[:id]}"}
+    :javascript
+      chartIt(#{position.to_json})

@@ -1,0 +1,14 @@
+= form_for(@position) do |f|
+  = f.label(:name)
+  = f.text_field(:name)
+  %h2 Characteristics
+  = f.fields_for :characteristics do |ff|
+    %div
+      = ff.label(:name)
+      = ff.text_field(:name)
+      = ff.label(:description)
+      = ff.text_area(:description)
+      - if ff.object.persisted?
+        = ff.check_box :_destroy
+        = ff.label :_destroy, "Destroy"
+  = f.submit

@@ -1,0 +1,9 @@
+%h1= @position.name
+= form_tag position_ratings_path, method: "put" do |ff|
+  - @ratings.each do |rating|
+    = fields_for 'ratings[]', rating do |f|
+      %div
+        = rating.characteristic.name
+        = f.select :value, options_for_select(Rating.values.collect { |name, int| [name.humanize, int] }, selected: Rating.values[rating.value])
+        = f.hidden_field :characteristic_id
+  = submit_tag
